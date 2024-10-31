@@ -1,0 +1,10 @@
+.env
+.config
+*.zip
+*tmp*
+*.pub
+
+.venv/
+keys/
+*test*/
+*tmp*/
