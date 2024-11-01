@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import json
 import requests
 from random import choices
@@ -86,7 +88,7 @@ def create_ghssh_key(key_location:str, use_random_password:bool=True, random_tab
 def delete_ghssh_key(key_id:int) -> bool:
   headers = deepcopy(BASE_HEADERS)
   resp = sess.delete(API_URL+f'/user/keys/{key_id}', headers=headers)
-  vprint(f'delete_ghssh_key(): {resp.json() = }')
+  vprint(f'delete_ghssh_key(): {resp.content = }')
   return (resp.status_code == 204)
 
 
