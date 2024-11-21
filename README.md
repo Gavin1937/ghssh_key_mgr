@@ -61,3 +61,34 @@ python ghssh_key_mgr.py -c -o "./test"
 ```sh
 python ghssh_key_mgr.py -r KEY_ID
 ```
+
+# Use the key with git
+
+To use the key with git, here are two methods:
+
+1. Use the key temporarily
+ * You can use this environment variable to specify a temporary ssh key for git
+ * [Reference](https://stackoverflow.com/a/29754018)
+
+```sh
+# Unix / Linux
+GIT_SSH_COMMAND='ssh -i private_key_file -o IdentitiesOnly=yes' git clone user@host:repo.git
+
+# Windows CMD
+set GIT_SSH_COMMAND='ssh -i private_key_file -o IdentitiesOnly=yes'
+git clone user@host:repo.git
+
+# Windows PowerShell
+$env:GIT_SSH_COMMAND='ssh -i private_key_file -o IdentitiesOnly=yes'
+git clone user@host:repo.git
+```
+
+2. Add this key to your ssh config
+ * [As this answer suggested](https://stackoverflow.com/a/74800613)
+ * Update your `~/.ssh/config` with following config
+
+```sh
+Host github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa
+```
