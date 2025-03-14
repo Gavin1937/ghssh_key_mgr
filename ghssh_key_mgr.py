@@ -10,7 +10,7 @@ from time import time
 import argparse
 import traceback
 import tempfile
-from shutil import move, rmtree
+from shutil import move, rmtree, copy
 from zipfile import ZipFile
 from sshkey_tools.keys import Ed25519PrivateKey
 
@@ -111,11 +111,13 @@ def cli_list_gh_keys(config):
   for r in resp:
     print(f'id={r["id"]}, title={r["title"]}')
 
-def cli_create_new_gh_key(config, out_path, save_password=False, save_zip=False):
+def cli_create_new_gh_key(config, out_path, attach_readme=True, save_password=False, save_zip=False):
   out_path = Path(out_path)
   if not out_path.exists() or not out_path.is_dir():
     raise ValueError(f'Input out_path doesn\'t exists or isn\'t a directory: {str(out_path)}')
   tmp_path = Path(tempfile.mkdtemp())
+  script_dir = Path(__file__).parent
+  
   vprint(f'cli_create_new_gh_key(): {tmp_path = }')
   print('Create a new ssh key and upload to your github account...')
   status,resp = create_ghssh_key(tmp_path)
@@ -125,6 +127,10 @@ def cli_create_new_gh_key(config, out_path, save_password=False, save_zip=False)
   print(f'Private Key: {out_path/Path(resp["priv_key_path"]).name}')
   print(f'Public Key: {out_path/Path(resp["pub_key_path"]).name}')
   print(f'The password for your key is: {resp["key_password"]}')
+  if attach_readme:
+    readmefile = script_dir/'README.md'
+    if readmefile.exists():
+      copy(readmefile, tmp_path)
   if save_password:
     with open(tmp_path/'password.txt', 'w') as file:
       file.write(resp['key_password'])
@@ -180,6 +186,11 @@ def main():
     help='Set output key folder'
   )
   parser.add_argument(
+    '-R','--readme',
+    action='store_true', default=True,
+    help='Don\'t attach README.md file to output'
+  )
+  parser.add_argument(
     '-P','--password',
     action='store_true', default=False,
     help='Also save password to file'
@@ -230,9 +241,10 @@ def main():
       else:
         out_folder = Path('./keys').resolve()
         out_folder.mkdir(parents=True, exist_ok=True)
+      attach_readme = args.readme
       save_password = args.password
       save_zip = args.zip
-      cli_create_new_gh_key(config, out_folder, save_password, save_zip)
+      cli_create_new_gh_key(config, out_folder, attach_readme, save_password, save_zip)
     elif args.remove > 0:
       cli_remove_gh_key(config, args.remove)
     else:

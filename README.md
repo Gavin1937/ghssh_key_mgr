@@ -62,6 +62,26 @@ python ghssh_key_mgr.py -c -o "./test"
 python ghssh_key_mgr.py -r KEY_ID
 ```
 
+5. Create new ssh key for your github account, and save the output to a zip file
+```sh
+# output keys.zip to "./keys" folder by default
+python ghssh_key_mgr.py -c -z
+
+# set output folder to "./test"
+python ghssh_key_mgr.py -c -z -o "./test"
+```
+
+6. Save passwords to a file when creating ssh key
+```sh
+python ghssh_key_mgr.py -c -P
+```
+
+7. Do not attach README.md when creating ssh key
+```sh
+python ghssh_key_mgr.py -c -R
+```
+
+
 # Use the key with git
 
 To use the key with git, here are two methods:
